@@ -103,8 +103,12 @@ exports.exitGatePass = (req, res) => {
     return res.status(400).json({ message: "QR token is required" });
   }
 
+  // Join with users table to get student details
   db.query(
-    "SELECT * FROM gatepass WHERE qr_token=?",
+    `SELECT g.*, u.name as student_name, u.email as student_email 
+     FROM gatepass g 
+     JOIN users u ON g.student_id = u.id 
+     WHERE g.qr_token = ?`,
     [qr_token],
     (err, result) => {
       if (err) return res.status(500).json({ error: err });
@@ -131,6 +135,10 @@ exports.exitGatePass = (req, res) => {
           res.json({
             message: "Student exited successfully",
             student_id: pass.student_id,
+            student_name: pass.student_name,
+            student_email: pass.student_email,
+            reason: pass.reason,
+            out_time: pass.out_time,
             exit_time: new Date().toISOString()
           });
         }

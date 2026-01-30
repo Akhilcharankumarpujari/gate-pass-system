@@ -361,26 +361,43 @@
 
                 if (!res.ok) throw new Error(data.message || 'Exit failed');
 
+                // Display student details
                 msgDiv.innerHTML = `
-          <div class="exit-result success">
-            <h3>✅ Success!</h3>
-            <p>Student exited successfully</p>
-          </div>
-        `;
+                    <div class="exit-result success" style="text-align: left; padding: 20px; background: rgba(16, 185, 129, 0.1); border: 2px solid var(--success); border-radius: 12px;">
+                        <h3 style="text-align: center; margin-bottom: 16px;">✅ Exit Successful!</h3>
+                        <div style="background: white; padding: 16px; border-radius: 8px; margin-bottom: 12px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                <div style="width: 50px; height: 50px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+                                    👤
+                                </div>
+                                <div>
+                                    <div style="font-size: 1.1rem; font-weight: 600; color: var(--text-dark);">${data.student_name || 'Student'}</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-secondary);">${data.student_email || ''}</div>
+                                </div>
+                            </div>
+                            <hr style="border: none; border-top: 1px solid var(--border); margin: 12px 0;">
+                            <div style="font-size: 0.9rem; color: var(--text-dark);">
+                                <p style="margin-bottom: 6px;"><strong>📝 Reason:</strong> ${data.reason || 'N/A'}</p>
+                                <p style="margin-bottom: 6px;"><strong>🕐 Out Time:</strong> ${data.out_time || 'N/A'}</p>
+                                <p><strong>✅ Exit Time:</strong> ${new Date(data.exit_time).toLocaleTimeString()}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
             } catch (err) {
                 msgDiv.innerHTML = `
-          <div class="exit-result error">
-            <h3>❌ Failed</h3>
-            <p>${err.message}</p>
-          </div>
-        `;
+                    <div class="exit-result error" style="padding: 20px; background: rgba(239, 68, 68, 0.1); border: 2px solid var(--danger); border-radius: 12px;">
+                        <h3 style="margin-bottom: 8px;">❌ Exit Failed</h3>
+                        <p style="font-size: 0.95rem;">${err.message}</p>
+                    </div>
+                `;
             }
 
             setTimeout(() => {
                 msgDiv.innerHTML = '';
                 document.getElementById('scannerStatus').textContent = 'Point camera at student\'s QR code';
                 if (html5QrcodeScanner) html5QrcodeScanner.resume();
-            }, 3000);
+            }, 5000);
         }
 
         async function processManualExit() {
