@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard - Gate Pass</title>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg-dark: #0f172a;
+      --bg-card: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a2e 100%);
+      min-height: 100vh;
+      color: var(--text-primary);
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      padding: 30px 0;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      background: linear-gradient(90deg, var(--primary), #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header p {
+      color: var(--text-secondary);
+      margin-top: 8px;
+    }
+
+    /* Login Section */
+    .login-section {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, var(--primary), #8b5cf6);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      margin-top: 10px;
+    }
+
+    /* Dashboard Section */
+    .dashboard-section {
+      display: none;
+    }
+
+    .user-info {
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .user-info span {
+      color: var(--text-secondary);
+    }
+
+    .logout-btn {
+      background: var(--danger);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    /* Gate Pass Cards */
+    .pass-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      border-left: 4px solid var(--primary);
+    }
+
+    .pass-card.approved {
+      border-left-color: var(--success);
+    }
+
+    .pass-card.exited {
+      border-left-color: var(--text-secondary);
+      opacity: 0.7;
+    }
+
+    .pass-card.pending {
+      border-left-color: var(--warning);
+    }
+
+    .pass-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .pass-id {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-badge.approved {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+    }
+
+    .status-badge.pending {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+    }
+
+    .status-badge.exited {
+      background: rgba(148, 163, 184, 0.2);
+      color: var(--text-secondary);
+    }
+
+    .pass-reason {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+    }
+
+    .pass-time {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* QR Code Display */
+    .qr-container {
+      text-align: center;
+      margin-top: 20px;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+    }
+
+    .qr-container img {
+      max-width: 200px;
+      width: 100%;
+    }
+
+    .qr-label {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: #333;
+    }
+
+    /* Loading & Messages */
+    .message {
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .message.error {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+    }
+
+    .message.success {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-secondary);
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--bg-card);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+    }
+
+    .empty-state svg {
+      width: 80px;
+      height: 80px;
+      opacity: 0.5;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>🎓 Student Gate Pass</h1>
+      <p>View and manage your gate passes</p>
+    </header>
+
+    <!-- Login Section -->
+    <section id="loginSection" class="login-section">
+      <h2 style="margin-bottom: 24px; text-align: center;">Student Login</h2>
+      <div id="loginError" class="message error" style="display: none;"></div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="student@college.edu" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+      </form>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboardSection" class="dashboard-section">
+      <div class="user-info">
+        <span>Welcome, Student</span>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+
+      <div id="passesContainer">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Loading your gate passes...</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const API_BASE = '/api';
+    let authToken = localStorage.getItem('student_token');
+
+    // Check auth on load
+    if (authToken) {
+      showDashboard();
+    }
+
+    // Login Form Handler
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const errorDiv = document.getElementById('loginError');
+
+      errorDiv.style.display = 'none';
+
+      try {
+        const response = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Login failed');
+        }
+
+        localStorage.setItem('student_token', data.token);
+        authToken = data.token;
+        showDashboard();
+
+      } catch (error) {
+        errorDiv.textContent = error.message;
+        errorDiv.style.display = 'block';
+      }
+    });
+
+    function showDashboard() {
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('dashboardSection').style.display = 'block';
+      loadGatePasses();
+    }
+
+    async function loadGatePasses() {
+      const container = document.getElementById('passesContainer');
+
+      try {
+        const response = await fetch(`${API_BASE}/gatepass/my-passes`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        if (response.status === 403) {
+          throw new Error('Access denied - Student account required');
+        }
+
+        if (!response.ok) {
+          throw new Error('Failed to load gate passes');
+        }
+
+        const passes = await response.json();
+
+        if (passes.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <p>No gate passes found</p>
+              <p style="margin-top: 8px; font-size: 0.85rem;">Request a gate pass to see it here</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = passes.map(pass => `
+          <div class="pass-card ${pass.status.toLowerCase()}">
+            <div class="pass-header">
+              <span class="pass-id">Pass #${pass.id}</span>
+              <span class="status-badge ${pass.status.toLowerCase()}">${pass.status}</span>
+            </div>
+            <div class="pass-reason">${pass.reason || 'No reason specified'}</div>
+            <div class="pass-time">
+              ${pass.out_time ? `🕐 Out Time: ${new Date(pass.out_time).toLocaleString()}` : ''}
+              ${pass.exit_time ? `<br>✅ Exit Time: ${new Date(pass.exit_time).toLocaleString()}` : ''}
+            </div>
+            ${pass.status === 'APPROVED' && pass.qr_image ? `
+              <div class="qr-container">
+                <img src="${pass.qr_image}" alt="Gate Pass QR Code">
+                <div class="qr-label">Show this QR to watchman at gate</div>
+              </div>
+            ` : ''}
+          </div>
+        `).join('');
+
+      } catch (error) {
+        container.innerHTML = `
+          <div class="message error">${error.message}</div>
+        `;
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('student_token');
+      authToken = null;
+      document.getElementById('loginSection').style.display = 'block';
+      document.getElementById('dashboardSection').style.display = 'none';
+      document.getElementById('email').value = '';
+      document.getElementById('password').value = '';
+    }
+  </script>
+</body>
+
+</html>

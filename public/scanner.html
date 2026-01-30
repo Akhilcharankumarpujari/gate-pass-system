@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watchman QR Scanner - Gate Pass</title>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a2e 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        header h1 {
+            font-size: 1.6rem;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* Login Section */
+        .login-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Scanner Section */
+        .scanner-section {
+            display: none;
+        }
+
+        .user-info {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info span {
+            color: var(--text-secondary);
+        }
+
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        /* QR Scanner Container */
+        .scanner-container {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .scanner-title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .scanner-title h2 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .scanner-title p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        #reader {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        #reader video {
+            border-radius: 12px;
+        }
+
+        /* Result Display */
+        .result-card {
+            margin-top: 20px;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-card.success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+            border: 1px solid var(--success);
+        }
+
+        .result-card.error {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
+            border: 1px solid var(--danger);
+        }
+
+        .result-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .result-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .result-message {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .scan-again-btn {
+            margin-top: 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* Loading & Messages */
+        .message {
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .processing {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .processing-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--bg-card);
+            border-top-color: var(--success);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Manual Entry */
+        .manual-entry {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .manual-entry h3 {
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        .manual-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .manual-input-group input {
+            flex: 1;
+        }
+
+        .manual-input-group button {
+            padding: 12px 20px;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🛡️ Watchman Scanner</h1>
+            <p>Scan student QR codes at gate</p>
+        </header>
+
+        <!-- Login Section -->
+        <section id="loginSection" class="login-section">
+            <h2 style="margin-bottom: 24px; text-align: center;">Watchman Login</h2>
+            <div id="loginError" class="message error" style="display: none;"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="watchman@college.edu" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+        </section>
+
+        <!-- Scanner Section -->
+        <section id="scannerSection" class="scanner-section">
+            <div class="user-info">
+                <span>🛡️ Watchman Mode</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+
+            <div class="scanner-container">
+                <div class="scanner-title">
+                    <h2>📷 Scan QR Code</h2>
+                    <p>Point camera at student's QR code</p>
+                </div>
+
+                <div id="reader"></div>
+
+                <div id="processingState" class="processing" style="display: none;">
+                    <div class="processing-spinner"></div>
+                    <p>Processing exit...</p>
+                </div>
+
+                <div id="resultContainer"></div>
+
+                <!-- Manual Entry -->
+                <div class="manual-entry">
+                    <h3>Or enter QR token manually:</h3>
+                    <div class="manual-input-group">
+                        <input type="text" id="manualToken" placeholder="Enter QR token...">
+                        <button class="btn btn-primary" onclick="processManualToken()">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let authToken = localStorage.getItem('watchman_token');
+        let html5QrCode = null;
+        let isProcessing = false;
+
+        // Check auth on load
+        if (authToken) {
+            showScanner();
+        }
+
+        // Login Form Handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('loginError');
+
+            errorDiv.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Login failed');
+                }
+
+                localStorage.setItem('watchman_token', data.token);
+                authToken = data.token;
+                showScanner();
+
+            } catch (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.style.display = 'block';
+            }
+        });
+
+        function showScanner() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('scannerSection').style.display = 'block';
+            initializeScanner();
+        }
+
+        function initializeScanner() {
+            html5QrCode = new Html5Qrcode("reader");
+
+            const config = {
+                fps: 10,
+                qrbox: { width: 250, height: 250 },
+                aspectRatio: 1.0
+            };
+
+            html5QrCode.start(
+                { facingMode: "environment" },
+                config,
+                onScanSuccess,
+                onScanError
+            ).catch(err => {
+                console.error("Camera error:", err);
+                document.getElementById('reader').innerHTML = `
+          <div style="padding: 40px; text-align: center; color: var(--text-secondary);">
+            <p>📷 Camera access denied or unavailable</p>
+            <p style="margin-top: 10px; font-size: 0.85rem;">Use manual entry below</p>
+          </div>
+        `;
+            });
+        }
+
+        function onScanSuccess(decodedText) {
+            if (isProcessing) return;
+
+            // Pause scanner
+            html5QrCode.pause();
+            processExit(decodedText);
+        }
+
+        function onScanError(errorMessage) {
+            // Ignore scan errors (normal when no QR in view)
+        }
+
+        async function processExit(qrToken) {
+            isProcessing = true;
+
+            document.getElementById('reader').style.display = 'none';
+            document.getElementById('processingState').style.display = 'block';
+            document.getElementById('resultContainer').innerHTML = '';
+
+            try {
+                const response = await fetch(`${API_BASE}/gatepass/exit`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ qr_token: qrToken })
+                });
+
+                const data = await response.json();
+
+                document.getElementById('processingState').style.display = 'none';
+
+                if (!response.ok) {
+                    showResult('error', 'Exit Failed', data.message || 'Invalid QR code');
+                } else {
+                    showResult('success', 'Exit Successful!', data.message);
+                }
+
+            } catch (error) {
+                document.getElementById('processingState').style.display = 'none';
+                showResult('error', 'Error', 'Network error. Please try again.');
+            }
+
+            isProcessing = false;
+        }
+
+        function showResult(type, title, message) {
+            const icon = type === 'success' ? '✅' : '❌';
+
+            document.getElementById('resultContainer').innerHTML = `
+        <div class="result-card ${type}">
+          <div class="result-icon">${icon}</div>
+          <div class="result-title">${title}</div>
+          <div class="result-message">${message}</div>
+          <button class="scan-again-btn" onclick="resetScanner()">Scan Next</button>
+        </div>
+      `;
+        }
+
+        function resetScanner() {
+            document.getElementById('resultContainer').innerHTML = '';
+            document.getElementById('reader').style.display = 'block';
+
+            if (html5QrCode) {
+                try {
+                    html5QrCode.resume();
+                } catch (e) {
+                    initializeScanner();
+                }
+            }
+        }
+
+        function processManualToken() {
+            const token = document.getElementById('manualToken').value.trim();
+            if (!token) {
+                alert('Please enter a QR token');
+                return;
+            }
+
+            if (html5QrCode) {
+                try {
+                    html5QrCode.pause();
+                } catch (e) { }
+            }
+
+            processExit(token);
+            document.getElementById('manualToken').value = '';
+        }
+
+        function logout() {
+            if (html5QrCode) {
+                try {
+                    html5QrCode.stop();
+                } catch (e) { }
+            }
+
+            localStorage.removeItem('watchman_token');
+            authToken = null;
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('scannerSection').style.display = 'none';
+            document.getElementById('email').value = '';
+            document.getElementById('password').value = '';
+        }
+    </script>
+</body>
+
+</html>

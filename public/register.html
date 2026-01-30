@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration - College Gate Pass</title>
+    <!--
+    SECURITY STATEMENT:
+    Frontend enforces role restriction and input validation,
+    while backend ensures authentication, authorization,
+    and password hashing.
+    
+    - Role is HARD-CODED as "student" - not user-selectable
+    - HOD and Watchman accounts are created by admin only
+    - Passwords are never logged or stored locally
+    - Input validation runs before any API call
+  -->
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a2e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 440px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(90deg, var(--primary), #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        label .required {
+            color: var(--danger);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        input.error {
+            border-color: var(--danger);
+        }
+
+        input.valid {
+            border-color: var(--success);
+        }
+
+        .field-error {
+            color: var(--danger);
+            font-size: 0.8rem;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .field-error.show {
+            display: block;
+        }
+
+        /* Password Strength Indicator */
+        .password-strength {
+            margin-top: 8px;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s;
+            border-radius: 2px;
+        }
+
+        .strength-fill.weak {
+            width: 25%;
+            background: var(--danger);
+        }
+
+        .strength-fill.fair {
+            width: 50%;
+            background: var(--warning);
+        }
+
+        .strength-fill.good {
+            width: 75%;
+            background: #3b82f6;
+        }
+
+        .strength-fill.strong {
+            width: 100%;
+            background: var(--success);
+        }
+
+        .strength-text {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .password-rules {
+            margin-top: 10px;
+            font-size: 0.8rem;
+        }
+
+        .password-rules li {
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .password-rules li.valid {
+            color: var(--success);
+        }
+
+        .password-rules li::before {
+            content: '○';
+            font-size: 0.6rem;
+        }
+
+        .password-rules li.valid::before {
+            content: '✓';
+            font-size: 0.7rem;
+        }
+
+        /* Button */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary), #8b5cf6);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        /* Security Notice */
+        .security-notice {
+            margin-top: 20px;
+            padding: 12px 16px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .security-notice strong {
+            color: #a5b4fc;
+        }
+
+        /* Login Link */
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .login-link a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Toggle password visibility */
+        .password-wrapper {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .toggle-password:hover {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 Student Registration</h1>
+            <p>Create your student account</p>
+        </header>
+
+        <div class="card">
+            <div id="alertBox" class="alert"></div>
+
+            <form id="registerForm" novalidate>
+                <!-- Name Field -->
+                <div class="form-group">
+                    <label for="name">Full Name <span class="required">*</span></label>
+                    <input type="text" id="name" placeholder="Enter your full name" autocomplete="name" required>
+                    <div id="nameError" class="field-error"></div>
+                </div>
+
+                <!-- Email Field -->
+                <div class="form-group">
+                    <label for="email">Email Address <span class="required">*</span></label>
+                    <input type="email" id="email" placeholder="student@college.edu" autocomplete="email" required>
+                    <div id="emailError" class="field-error"></div>
+                </div>
+
+                <!-- Password Field -->
+                <div class="form-group">
+                    <label for="password">Password <span class="required">*</span></label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" placeholder="Create a strong password"
+                            autocomplete="new-password" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword()">Show</button>
+                    </div>
+                    <div id="passwordError" class="field-error"></div>
+
+                    <!-- Password Strength Indicator -->
+                    <div class="password-strength">
+                        <div class="strength-bar">
+                            <div id="strengthFill" class="strength-fill"></div>
+                        </div>
+                        <div id="strengthText" class="strength-text"></div>
+                    </div>
+
+                    <!-- Password Requirements Checklist -->
+                    <ul class="password-rules">
+                        <li id="rule-length">At least 8 characters</li>
+                        <li id="rule-upper">At least 1 uppercase letter</li>
+                        <li id="rule-number">At least 1 number</li>
+                        <li id="rule-special">At least 1 special character (!@#$%^&*)</li>
+                    </ul>
+                </div>
+
+                <!-- Confirm Password Field -->
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm your password"
+                        autocomplete="new-password" required>
+                    <div id="confirmError" class="field-error"></div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    Create Account
+                </button>
+            </form>
+
+            <!-- Security Notice -->
+            <div class="security-notice">
+                <strong>🔒 Security Notice:</strong> This form creates student accounts only.
+                HOD and Watchman accounts are created by system administrators.
+            </div>
+
+            <!-- Login Link -->
+            <div class="login-link">
+                Already have an account? <a href="/student.html">Login here</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * SECURITY STATEMENT:
+         * Frontend enforces role restriction and input validation,
+         * while backend ensures authentication, authorization,
+         * and password hashing.
+         * 
+         * CRITICAL: Role is HARD-CODED as "student" and cannot be changed by user.
+         */
+
+        const API_BASE = '/api';
+        const HARD_CODED_ROLE = 'student'; // SECURITY: Role is not user-selectable
+
+        // Rate limiting state
+        let isSubmitting = false;
+        let lastSubmitTime = 0;
+        const MIN_SUBMIT_INTERVAL = 2000; // 2 seconds between submissions
+
+        // DOM Elements
+        const form = document.getElementById('registerForm');
+        const alertBox = document.getElementById('alertBox');
+        const submitBtn = document.getElementById('submitBtn');
+        const passwordInput = document.getElementById('password');
+
+        // Validation rules
+        const validators = {
+            name: (value) => {
+                if (!value.trim()) return 'Name is required';
+                if (value.trim().length < 3) return 'Name must be at least 3 characters';
+                return null;
+            },
+            email: (value) => {
+                if (!value.trim()) return 'Email is required';
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(value)) return 'Please enter a valid email address';
+                return null;
+            },
+            password: (value) => {
+                if (!value) return 'Password is required';
+                if (value.length < 8) return 'Password must be at least 8 characters';
+                if (!/[A-Z]/.test(value)) return 'Password must have at least 1 uppercase letter';
+                if (!/[0-9]/.test(value)) return 'Password must have at least 1 number';
+                if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) return 'Password must have at least 1 special character';
+                return null;
+            },
+            confirmPassword: (value, password) => {
+                if (!value) return 'Please confirm your password';
+                if (value !== password) return 'Passwords do not match';
+                return null;
+            }
+        };
+
+        // Real-time password strength checker
+        passwordInput.addEventListener('input', function () {
+            const password = this.value;
+            updatePasswordStrength(password);
+            updatePasswordRules(password);
+        });
+
+        function updatePasswordStrength(password) {
+            const strengthFill = document.getElementById('strengthFill');
+            const strengthText = document.getElementById('strengthText');
+
+            let score = 0;
+            if (password.length >= 8) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score++;
+
+            strengthFill.className = 'strength-fill';
+
+            if (password.length === 0) {
+                strengthText.textContent = '';
+            } else if (score <= 1) {
+                strengthFill.classList.add('weak');
+                strengthText.textContent = 'Weak password';
+            } else if (score === 2) {
+                strengthFill.classList.add('fair');
+                strengthText.textContent = 'Fair password';
+            } else if (score === 3) {
+                strengthFill.classList.add('good');
+                strengthText.textContent = 'Good password';
+            } else {
+                strengthFill.classList.add('strong');
+                strengthText.textContent = 'Strong password ✓';
+            }
+        }
+
+        function updatePasswordRules(password) {
+            document.getElementById('rule-length').classList.toggle('valid', password.length >= 8);
+            document.getElementById('rule-upper').classList.toggle('valid', /[A-Z]/.test(password));
+            document.getElementById('rule-number').classList.toggle('valid', /[0-9]/.test(password));
+            document.getElementById('rule-special').classList.toggle('valid', /[!@#$%^&*(),.?":{}|<>]/.test(password));
+        }
+
+        function togglePassword() {
+            const input = document.getElementById('password');
+            const btn = document.querySelector('.toggle-password');
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = 'Hide';
+            } else {
+                input.type = 'password';
+                btn.textContent = 'Show';
+            }
+        }
+
+        function showFieldError(fieldId, message) {
+            const input = document.getElementById(fieldId);
+            const error = document.getElementById(fieldId + 'Error');
+            input.classList.add('error');
+            input.classList.remove('valid');
+            error.textContent = message;
+            error.classList.add('show');
+        }
+
+        function clearFieldError(fieldId) {
+            const input = document.getElementById(fieldId);
+            const error = document.getElementById(fieldId + 'Error');
+            input.classList.remove('error');
+            error.classList.remove('show');
+        }
+
+        function showAlert(message, type) {
+            alertBox.textContent = message;
+            alertBox.className = `alert alert-${type} show`;
+
+            if (type === 'success') {
+                setTimeout(() => {
+                    alertBox.classList.remove('show');
+                }, 5000);
+            }
+        }
+
+        function hideAlert() {
+            alertBox.classList.remove('show');
+        }
+
+        function setLoading(loading) {
+            if (loading) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner"></span> Creating Account...';
+            } else {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Create Account';
+            }
+        }
+
+        // Form submission handler
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            hideAlert();
+
+            // Rate limiting check
+            const now = Date.now();
+            if (isSubmitting || (now - lastSubmitTime) < MIN_SUBMIT_INTERVAL) {
+                showAlert('Please wait before submitting again', 'error');
+                return;
+            }
+
+            // Get form values
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Clear previous errors
+            ['name', 'email', 'password', 'confirm'].forEach(f => clearFieldError(f));
+
+            // Validate all fields
+            let hasErrors = false;
+
+            const nameError = validators.name(name);
+            if (nameError) {
+                showFieldError('name', nameError);
+                hasErrors = true;
+            }
+
+            const emailError = validators.email(email);
+            if (emailError) {
+                showFieldError('email', emailError);
+                hasErrors = true;
+            }
+
+            const passwordError = validators.password(password);
+            if (passwordError) {
+                showFieldError('password', passwordError);
+                hasErrors = true;
+            }
+
+            const confirmError = validators.confirmPassword(confirmPassword, password);
+            if (confirmError) {
+                showFieldError('confirmPassword', confirmError);
+                hasErrors = true;
+            }
+
+            if (hasErrors) return;
+
+            // Start submission
+            isSubmitting = true;
+            lastSubmitTime = now;
+            setLoading(true);
+
+            try {
+                /**
+                 * SECURITY: Role is HARD-CODED as "student"
+                 * This ensures users cannot register as HOD or Watchman
+                 * Privileged roles are created by system administrators only
+                 */
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: name.trim(),
+                        email: email.trim().toLowerCase(),
+                        password: password, // NEVER log this value
+                        role: HARD_CODED_ROLE // SECURITY: Always "student"
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    // Handle specific error cases
+                    if (response.status === 409 || (data.message && data.message.toLowerCase().includes('duplicate'))) {
+                        throw new Error('This email is already registered. Please use a different email or login.');
+                    }
+                    if (response.status === 400) {
+                        throw new Error(data.message || 'Invalid registration data. Please check your inputs.');
+                    }
+                    throw new Error(data.message || 'Registration failed. Please try again.');
+                }
+
+                // Success!
+                showAlert('✅ Registration successful! Redirecting to login...', 'success');
+                form.reset();
+
+                // Reset password strength UI
+                document.getElementById('strengthFill').className = 'strength-fill';
+                document.getElementById('strengthText').textContent = '';
+                document.querySelectorAll('.password-rules li').forEach(li => li.classList.remove('valid'));
+
+                // Redirect to login page after 2 seconds
+                setTimeout(() => {
+                    window.location.href = '/student.html';
+                }, 2000);
+
+            } catch (error) {
+                // SECURITY: Show user-friendly error, never expose backend stack traces
+                showAlert(error.message, 'error');
+            } finally {
+                isSubmitting = false;
+                setLoading(false);
+            }
+        });
+
+        // Real-time validation on blur
+        document.getElementById('name').addEventListener('blur', function () {
+            const error = validators.name(this.value);
+            if (error) showFieldError('name', error);
+            else {
+                clearFieldError('name');
+                this.classList.add('valid');
+            }
+        });
+
+        document.getElementById('email').addEventListener('blur', function () {
+            const error = validators.email(this.value);
+            if (error) showFieldError('email', error);
+            else {
+                clearFieldError('email');
+                this.classList.add('valid');
+            }
+        });
+
+        document.getElementById('confirmPassword').addEventListener('blur', function () {
+            const password = document.getElementById('password').value;
+            const error = validators.confirmPassword(this.value, password);
+            if (error) showFieldError('confirmPassword', error);
+            else {
+                clearFieldError('confirmPassword');
+                this.classList.add('valid');
+            }
+        });
+    </script>
+</body>
+
+</html>

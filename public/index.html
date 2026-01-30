@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Gate Pass System</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a2e 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 30px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card.student {
+            border-color: #6366f1;
+        }
+
+        .card.student:hover {
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+        }
+
+        .card.hod {
+            border-color: #f59e0b;
+        }
+
+        .card.hod:hover {
+            box-shadow: 0 20px 40px rgba(245, 158, 11, 0.2);
+        }
+
+        .card.watchman {
+            border-color: #10b981;
+        }
+
+        .card.watchman:hover {
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
+        }
+
+        .card.register {
+            border-color: #a855f7;
+        }
+
+        .card.register:hover {
+            box-shadow: 0 20px 40px rgba(168, 85, 247, 0.2);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .card-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .note {
+            margin-top: 40px;
+            padding: 16px 24px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 10px;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .note-title {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #a5b4fc;
+        }
+
+        .note-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .credentials {
+            margin-top: 30px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 400px;
+        }
+
+        .credentials h3 {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        .cred-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+        }
+
+        .cred-item:last-child {
+            border-bottom: none;
+        }
+
+        .cred-role {
+            color: var(--text-secondary);
+        }
+
+        /* Top Right Register Button */
+        .top-bar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .register-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: linear-gradient(90deg, #a855f7, #6366f1);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4);
+        }
+
+        .register-btn .icon {
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Right Register Button -->
+    <div class="top-bar">
+        <a href="/register.html" class="register-btn">
+            <span class="icon">📝</span>
+            <span>Register</span>
+        </a>
+    </div>
+
+    <h1>🎓 College Gate Pass</h1>
+    <p class="subtitle">Smart Campus Exit Management System</p>
+
+    <div class="cards">
+        <a href="/student.html" class="card student">
+            <div class="card-icon">👨‍🎓</div>
+            <div class="card-title">Student Portal</div>
+            <div class="card-desc">Request gate passes and view your approved QR codes for exit.</div>
+        </a>
+
+        <a href="/hod.html" class="card hod">
+            <div class="card-icon">👨‍💼</div>
+            <div class="card-title">HOD Dashboard</div>
+            <div class="card-desc">Review pending requests and approve student gate passes.</div>
+        </a>
+
+        <a href="/scanner.html" class="card watchman">
+            <div class="card-icon">🛡️</div>
+            <div class="card-title">Watchman Scanner</div>
+            <div class="card-desc">Scan QR codes at the gate to record student exits.</div>
+        </a>
+    </div>
+
+    <div class="note">
+        <div class="note-title">💡 Simultaneous Usage</div>
+        <div class="note-text">Open each portal in a separate browser tab to test the complete flow simultaneously!
+        </div>
+    </div>
+
+    <div class="credentials">
+        <h3>🔐 Test Credentials (password: test123)</h3>
+        <div class="cred-item">
+            <span class="cred-role">Student:</span>
+            <span>student@test.com</span>
+        </div>
+        <div class="cred-item">
+            <span class="cred-role">HOD:</span>
+            <span>hod@test.com</span>
+        </div>
+        <div class="cred-item">
+            <span class="cred-role">Watchman:</span>
+            <span>watchman@test.com</span>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOD Dashboard - Gate Pass</title>
+    <style>
+        :root {
+            --primary: #f59e0b;
+            --primary-hover: #d97706;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a2e 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(90deg, var(--primary), #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary), #ef4444);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+            width: auto;
+            padding: 8px 16px;
+            margin-top: 12px;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+            padding: 8px 16px;
+            width: auto;
+            font-size: 0.85rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .user-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .role-badge {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .request-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .request-details {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 HOD Dashboard</h1>
+            <p>Approve student gate passes</p>
+        </header>
+
+        <!-- Login Section -->
+        <section id="loginSection" class="card">
+            <h2 style="margin-bottom: 20px;">🔐 HOD Login</h2>
+            <div id="loginError" class="alert alert-error hidden"></div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" placeholder="hod@college.edu" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" id="loginBtn">Login</button>
+            </form>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboardSection" class="hidden">
+            <div class="user-bar">
+                <div>Welcome! <span class="role-badge">HOD</span></div>
+                <button class="btn-danger" onclick="logout()">Logout</button>
+            </div>
+
+            <div class="card">
+                <h2 style="margin-bottom: 16px;">📋 Pending Requests</h2>
+                <div id="hodMessage"></div>
+                <div id="pendingList">
+                    <p style="color: var(--text-secondary); text-align: center;">Loading...</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        // Use separate key for HOD token
+        let authToken = localStorage.getItem('hod_token');
+
+        if (authToken) showDashboard();
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('loginBtn');
+            const errorDiv = document.getElementById('loginError');
+
+            errorDiv.classList.add('hidden');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span>';
+
+            try {
+                const res = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Login failed');
+
+                // Verify role
+                const payload = JSON.parse(atob(data.token.split('.')[1]));
+                if (payload.role !== 'hod') throw new Error('Access denied - HOD account required');
+
+                localStorage.setItem('hod_token', data.token);
+                authToken = data.token;
+                showDashboard();
+            } catch (err) {
+                errorDiv.textContent = err.message;
+                errorDiv.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Login';
+            }
+        });
+
+        function showDashboard() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            loadPendingRequests();
+        }
+
+        async function loadPendingRequests() {
+            const container = document.getElementById('pendingList');
+            try {
+                const res = await fetch(`${API_BASE}/gatepass/pending`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (!res.ok) throw new Error('Failed to load');
+                const requests = await res.json();
+
+                if (requests.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; padding: 30px; color: var(--text-secondary);">✅ No pending requests</p>';
+                    return;
+                }
+
+                container.innerHTML = requests.map(req => `
+          <div class="request-item" id="request-${req.id}">
+            <div class="request-header">
+              <strong>Student #${req.student_id}</strong>
+              <span class="status-pending">PENDING</span>
+            </div>
+            <div class="request-details">
+              <p><strong>Reason:</strong> ${req.reason || 'N/A'}</p>
+              <p><strong>Out Time:</strong> ${req.out_time || 'N/A'}</p>
+            </div>
+            <button class="btn btn-success" onclick="approveRequest(${req.id})">✓ Approve</button>
+          </div>
+        `).join('');
+            } catch (err) {
+                container.innerHTML = `<div class="alert alert-error">${err.message}</div>`;
+            }
+        }
+
+        async function approveRequest(id) {
+            const item = document.getElementById(`request-${id}`);
+            const btn = item.querySelector('button');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span>';
+
+            try {
+                const res = await fetch(`${API_BASE}/gatepass/approve/${id}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (!res.ok) throw new Error('Approval failed');
+
+                document.getElementById('hodMessage').innerHTML = '<div class="alert alert-success">✅ Gate pass approved! QR generated.</div>';
+                setTimeout(() => document.getElementById('hodMessage').innerHTML = '', 3000);
+                item.remove();
+
+                if (!document.querySelector('.request-item')) {
+                    document.getElementById('pendingList').innerHTML = '<p style="text-align: center; padding: 30px; color: var(--text-secondary);">✅ No pending requests</p>';
+                }
+            } catch (err) {
+                btn.disabled = false;
+                btn.innerHTML = '✓ Approve';
+                alert(err.message);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('hod_token');
+            location.reload();
+        }
+    </script>
+</body>
+
+</html>
