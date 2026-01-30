@@ -321,6 +321,29 @@
         <button class="logout-btn" onclick="logout()">Logout</button>
       </div>
 
+      <!-- Request Form -->
+      <div class="pass-card" style="border-left-color: #6366f1; margin-bottom: 24px;">
+        <h3 style="margin-bottom: 16px;">📝 Request New Gate Pass</h3>
+        <div id="requestMessage"></div>
+        <form id="requestForm">
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label for="reason" style="display: block; margin-bottom: 6px; color: #94a3b8;">Reason for leaving</label>
+            <input type="text" id="reason" placeholder="e.g., Medical appointment, Family emergency" required
+              style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #f1f5f9;">
+          </div>
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label for="outTime" style="display: block; margin-bottom: 6px; color: #94a3b8;">Expected out time</label>
+            <input type="time" id="outTime" required
+              style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #f1f5f9;">
+          </div>
+          <button type="submit" class="btn btn-primary" id="requestBtn"
+            style="background: linear-gradient(90deg, #6366f1, #8b5cf6); border: none; padding: 12px; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; width: 100%;">
+            Submit Request
+          </button>
+        </form>
+      </div>
+
+      <h3 style="margin-bottom: 16px; color: #94a3b8;">📋 My Gate Passes</h3>
       <div id="passesContainer">
         <div class="loading">
           <div class="spinner"></div>
@@ -377,6 +400,43 @@
       document.getElementById('dashboardSection').style.display = 'block';
       loadGatePasses();
     }
+
+    // Request Form Handler
+    document.getElementById('requestForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const reason = document.getElementById('reason').value;
+      const outTime = document.getElementById('outTime').value;
+      const btn = document.getElementById('requestBtn');
+      const msgDiv = document.getElementById('requestMessage');
+
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+      msgDiv.innerHTML = '';
+
+      try {
+        const response = await fetch(`${API_BASE}/gatepass/request`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify({ reason, outTime })
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Request failed');
+
+        msgDiv.innerHTML = '<div class="message success" style="background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 12px; border-radius: 8px; margin-bottom: 12px;">✅ Gate pass requested! Waiting for HOD approval.</div>';
+        document.getElementById('reason').value = '';
+        document.getElementById('outTime').value = '';
+        loadGatePasses(); // Refresh list
+      } catch (error) {
+        msgDiv.innerHTML = `<div class="message error" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; padding: 12px; border-radius: 8px; margin-bottom: 12px;">❌ ${error.message}</div>`;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Submit Request';
+      }
+    });
 
     async function loadGatePasses() {
       const container = document.getElementById('passesContainer');
