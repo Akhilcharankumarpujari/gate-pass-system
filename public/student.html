@@ -7,15 +7,16 @@
   <title>Student Dashboard - Gate Pass</title>
   <style>
     :root {
-      --primary: #6366f1;
-      --primary-dark: #4f46e5;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
       --success: #10b981;
       --warning: #f59e0b;
       --danger: #ef4444;
-      --bg-dark: #0f172a;
-      --bg-card: #1e293b;
-      --text-primary: #f1f5f9;
-      --text-secondary: #94a3b8;
+      --bg-light: #f8fafc;
+      --bg-white: #ffffff;
+      --text-dark: #1e293b;
+      --text-secondary: #64748b;
+      --border: #e2e8f0;
     }
 
     * {
@@ -25,10 +26,10 @@
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a2e 100%);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
       min-height: 100vh;
-      color: var(--text-primary);
+      color: var(--text-dark);
     }
 
     .container {
@@ -44,10 +45,7 @@
 
     header h1 {
       font-size: 1.8rem;
-      background: linear-gradient(90deg, var(--primary), #a855f7);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--primary);
     }
 
     header p {
@@ -55,12 +53,12 @@
       margin-top: 8px;
     }
 
-    /* Login Section */
     .login-section {
-      background: var(--bg-card);
+      background: var(--bg-white);
       border-radius: 16px;
       padding: 30px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 10px 40px rgba(37, 99, 235, 0.1);
+      border: 1px solid var(--border);
     }
 
     .form-group {
@@ -77,10 +75,10 @@
     input {
       width: 100%;
       padding: 14px 16px;
-      border: 1px solid #334155;
+      border: 2px solid var(--border);
       border-radius: 10px;
-      background: var(--bg-dark);
-      color: var(--text-primary);
+      background: var(--bg-white);
+      color: var(--text-dark);
       font-size: 1rem;
       transition: border-color 0.3s;
     }
@@ -102,39 +100,29 @@
     }
 
     .btn-primary {
-      background: linear-gradient(90deg, var(--primary), #8b5cf6);
+      background: var(--primary);
       color: white;
     }
 
     .btn-primary:hover {
+      background: var(--primary-dark);
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
     }
 
-    .btn-secondary {
-      background: transparent;
-      border: 1px solid var(--primary);
-      color: var(--primary);
-      margin-top: 10px;
-    }
-
-    /* Dashboard Section */
     .dashboard-section {
       display: none;
     }
 
     .user-info {
-      background: var(--bg-card);
+      background: var(--bg-white);
       border-radius: 12px;
       padding: 16px;
       margin-bottom: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-
-    .user-info span {
-      color: var(--text-secondary);
+      border: 1px solid var(--border);
     }
 
     .logout-btn {
@@ -147,26 +135,27 @@
       font-size: 0.85rem;
     }
 
-    /* Gate Pass Cards */
     .pass-card {
-      background: var(--bg-card);
+      background: var(--bg-white);
       border-radius: 16px;
       padding: 24px;
       margin-bottom: 20px;
       border-left: 4px solid var(--primary);
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.08);
     }
 
     .pass-card.approved {
-      border-left-color: var(--success);
+      border-left: 4px solid var(--success);
     }
 
     .pass-card.exited {
-      border-left-color: var(--text-secondary);
+      border-left: 4px solid var(--text-secondary);
       opacity: 0.7;
     }
 
     .pass-card.pending {
-      border-left-color: var(--warning);
+      border-left: 4px solid var(--warning);
     }
 
     .pass-header {
@@ -190,17 +179,17 @@
     }
 
     .status-badge.approved {
-      background: rgba(16, 185, 129, 0.2);
+      background: rgba(16, 185, 129, 0.15);
       color: var(--success);
     }
 
     .status-badge.pending {
-      background: rgba(245, 158, 11, 0.2);
+      background: rgba(245, 158, 11, 0.15);
       color: var(--warning);
     }
 
     .status-badge.exited {
-      background: rgba(148, 163, 184, 0.2);
+      background: rgba(100, 116, 139, 0.15);
       color: var(--text-secondary);
     }
 
@@ -214,13 +203,13 @@
       color: var(--text-secondary);
     }
 
-    /* QR Code Display */
     .qr-container {
       text-align: center;
       margin-top: 20px;
       padding: 20px;
-      background: white;
+      background: var(--bg-white);
       border-radius: 12px;
+      border: 2px solid var(--primary);
     }
 
     .qr-container img {
@@ -231,10 +220,10 @@
     .qr-label {
       margin-top: 10px;
       font-size: 0.85rem;
-      color: #333;
+      color: var(--primary);
+      font-weight: 600;
     }
 
-    /* Loading & Messages */
     .message {
       padding: 14px;
       border-radius: 10px;
@@ -243,13 +232,15 @@
     }
 
     .message.error {
-      background: rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.1);
       color: var(--danger);
+      border: 1px solid var(--danger);
     }
 
     .message.success {
-      background: rgba(16, 185, 129, 0.2);
+      background: rgba(16, 185, 129, 0.1);
       color: var(--success);
+      border: 1px solid var(--success);
     }
 
     .loading {
@@ -261,7 +252,7 @@
     .spinner {
       width: 40px;
       height: 40px;
-      border: 3px solid var(--bg-card);
+      border: 3px solid var(--border);
       border-top-color: var(--primary);
       border-radius: 50%;
       animation: spin 1s linear infinite;
@@ -286,6 +277,10 @@
       opacity: 0.5;
       margin-bottom: 16px;
     }
+
+    h3 {
+      color: var(--primary);
+    }
   </style>
 </head>
 
@@ -298,7 +293,7 @@
 
     <!-- Login Section -->
     <section id="loginSection" class="login-section">
-      <h2 style="margin-bottom: 24px; text-align: center;">Student Login</h2>
+      <h2 style="margin-bottom: 24px; text-align: center; color: var(--primary);">Student Login</h2>
       <div id="loginError" class="message error" style="display: none;"></div>
 
       <form id="loginForm">
@@ -322,28 +317,23 @@
       </div>
 
       <!-- Request Form -->
-      <div class="pass-card" style="border-left-color: #6366f1; margin-bottom: 24px;">
+      <div class="pass-card" style="border-left: 4px solid var(--primary); margin-bottom: 24px;">
         <h3 style="margin-bottom: 16px;">📝 Request New Gate Pass</h3>
         <div id="requestMessage"></div>
         <form id="requestForm">
-          <div class="form-group" style="margin-bottom: 16px;">
-            <label for="reason" style="display: block; margin-bottom: 6px; color: #94a3b8;">Reason for leaving</label>
-            <input type="text" id="reason" placeholder="e.g., Medical appointment, Family emergency" required
-              style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #f1f5f9;">
+          <div class="form-group">
+            <label for="reason">Reason for leaving</label>
+            <input type="text" id="reason" placeholder="e.g., Medical appointment, Family emergency" required>
           </div>
-          <div class="form-group" style="margin-bottom: 16px;">
-            <label for="outTime" style="display: block; margin-bottom: 6px; color: #94a3b8;">Expected out time</label>
-            <input type="time" id="outTime" required
-              style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #f1f5f9;">
+          <div class="form-group">
+            <label for="outTime">Expected out time</label>
+            <input type="time" id="outTime" required>
           </div>
-          <button type="submit" class="btn btn-primary" id="requestBtn"
-            style="background: linear-gradient(90deg, #6366f1, #8b5cf6); border: none; padding: 12px; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; width: 100%;">
-            Submit Request
-          </button>
+          <button type="submit" class="btn btn-primary" id="requestBtn">Submit Request</button>
         </form>
       </div>
 
-      <h3 style="margin-bottom: 16px; color: #94a3b8;">📋 My Gate Passes</h3>
+      <h3 style="margin-bottom: 16px;">📋 My Gate Passes</h3>
       <div id="passesContainer">
         <div class="loading">
           <div class="spinner"></div>
@@ -357,19 +347,13 @@
     const API_BASE = '/api';
     let authToken = localStorage.getItem('student_token');
 
-    // Check auth on load
-    if (authToken) {
-      showDashboard();
-    }
+    if (authToken) showDashboard();
 
-    // Login Form Handler
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
       const errorDiv = document.getElementById('loginError');
-
       errorDiv.style.display = 'none';
 
       try {
@@ -378,17 +362,16 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
         });
-
         const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Login failed');
 
-        if (!response.ok) {
-          throw new Error(data.message || 'Login failed');
-        }
+        // Verify student role
+        const payload = JSON.parse(atob(data.token.split('.')[1]));
+        if (payload.role !== 'student') throw new Error('Access denied - Student account required');
 
         localStorage.setItem('student_token', data.token);
         authToken = data.token;
         showDashboard();
-
       } catch (error) {
         errorDiv.textContent = error.message;
         errorDiv.style.display = 'block';
@@ -422,16 +405,15 @@
           },
           body: JSON.stringify({ reason, outTime })
         });
-
         const data = await response.json();
         if (!response.ok) throw new Error(data.message || 'Request failed');
 
-        msgDiv.innerHTML = '<div class="message success" style="background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 12px; border-radius: 8px; margin-bottom: 12px;">✅ Gate pass requested! Waiting for HOD approval.</div>';
+        msgDiv.innerHTML = '<div class="message success">✅ Gate pass requested! Waiting for HOD approval.</div>';
         document.getElementById('reason').value = '';
         document.getElementById('outTime').value = '';
-        loadGatePasses(); // Refresh list
+        loadGatePasses();
       } catch (error) {
-        msgDiv.innerHTML = `<div class="message error" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; padding: 12px; border-radius: 8px; margin-bottom: 12px;">❌ ${error.message}</div>`;
+        msgDiv.innerHTML = `<div class="message error">❌ ${error.message}</div>`;
       } finally {
         btn.disabled = false;
         btn.textContent = 'Submit Request';
@@ -440,19 +422,12 @@
 
     async function loadGatePasses() {
       const container = document.getElementById('passesContainer');
-
       try {
         const response = await fetch(`${API_BASE}/gatepass/my-passes`, {
           headers: { 'Authorization': `Bearer ${authToken}` }
         });
-
-        if (response.status === 403) {
-          throw new Error('Access denied - Student account required');
-        }
-
-        if (!response.ok) {
-          throw new Error('Failed to load gate passes');
-        }
+        if (response.status === 403) throw new Error('Access denied');
+        if (!response.ok) throw new Error('Failed to load gate passes');
 
         const passes = await response.json();
 
@@ -463,7 +438,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               <p>No gate passes found</p>
-              <p style="margin-top: 8px; font-size: 0.85rem;">Request a gate pass to see it here</p>
+              <p style="margin-top: 8px; font-size: 0.85rem;">Request a gate pass above!</p>
             </div>
           `;
           return;
@@ -477,8 +452,8 @@
             </div>
             <div class="pass-reason">${pass.reason || 'No reason specified'}</div>
             <div class="pass-time">
-              ${pass.out_time ? `🕐 Out Time: ${new Date(pass.out_time).toLocaleString()}` : ''}
-              ${pass.exit_time ? `<br>✅ Exit Time: ${new Date(pass.exit_time).toLocaleString()}` : ''}
+              ${pass.out_time ? `🕐 Out Time: ${pass.out_time}` : ''}
+              ${pass.exit_time ? `<br>✅ Exited: ${new Date(pass.exit_time).toLocaleString()}` : ''}
             </div>
             ${pass.status === 'APPROVED' && pass.qr_image ? `
               <div class="qr-container">
@@ -488,11 +463,8 @@
             ` : ''}
           </div>
         `).join('');
-
       } catch (error) {
-        container.innerHTML = `
-          <div class="message error">${error.message}</div>
-        `;
+        container.innerHTML = `<div class="message error">${error.message}</div>`;
       }
     }
 
@@ -501,8 +473,6 @@
       authToken = null;
       document.getElementById('loginSection').style.display = 'block';
       document.getElementById('dashboardSection').style.display = 'none';
-      document.getElementById('email').value = '';
-      document.getElementById('password').value = '';
     }
   </script>
 </body>

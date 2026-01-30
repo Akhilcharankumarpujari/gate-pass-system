@@ -10,24 +10,19 @@
     Frontend enforces role restriction and input validation,
     while backend ensures authentication, authorization,
     and password hashing.
-    
-    - Role is HARD-CODED as "student" - not user-selectable
-    - HOD and Watchman accounts are created by admin only
-    - Passwords are never logged or stored locally
-    - Input validation runs before any API call
   -->
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --bg-dark: #0f172a;
-            --bg-card: #1e293b;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --border: #334155;
+            --bg-light: #f8fafc;
+            --bg-white: #ffffff;
+            --text-dark: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
         }
 
         * {
@@ -38,12 +33,12 @@
 
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a2e 100%);
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--text-primary);
+            color: var(--text-dark);
             padding: 20px;
         }
 
@@ -59,10 +54,7 @@
 
         header h1 {
             font-size: 1.8rem;
-            background: linear-gradient(90deg, var(--primary), #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--primary);
             margin-bottom: 8px;
         }
 
@@ -72,10 +64,11 @@
         }
 
         .card {
-            background: var(--bg-card);
+            background: var(--bg-white);
             border-radius: 16px;
             padding: 32px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 40px rgba(37, 99, 235, 0.1);
+            border: 1px solid var(--border);
         }
 
         .form-group {
@@ -96,10 +89,10 @@
         input {
             width: 100%;
             padding: 12px 14px;
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
             border-radius: 8px;
-            background: var(--bg-dark);
-            color: var(--text-primary);
+            background: var(--bg-white);
+            color: var(--text-dark);
             font-size: 1rem;
             transition: border-color 0.2s;
         }
@@ -128,7 +121,6 @@
             display: block;
         }
 
-        /* Password Strength Indicator */
         .password-strength {
             margin-top: 8px;
         }
@@ -201,7 +193,6 @@
             font-size: 0.7rem;
         }
 
-        /* Button */
         .btn {
             width: 100%;
             padding: 14px;
@@ -218,19 +209,18 @@
         }
 
         .btn-primary {
-            background: linear-gradient(90deg, var(--primary), #8b5cf6);
+            background: var(--primary);
             color: white;
         }
 
         .btn-primary:hover:not(:disabled) {
+            background: var(--primary-dark);
             transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
         }
 
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
-            transform: none;
         }
 
         .spinner {
@@ -248,7 +238,6 @@
             }
         }
 
-        /* Alerts */
         .alert {
             padding: 14px 16px;
             border-radius: 8px;
@@ -262,33 +251,31 @@
         }
 
         .alert-error {
-            background: rgba(239, 68, 68, 0.15);
+            background: rgba(239, 68, 68, 0.1);
             border: 1px solid var(--danger);
             color: var(--danger);
         }
 
         .alert-success {
-            background: rgba(16, 185, 129, 0.15);
+            background: rgba(16, 185, 129, 0.1);
             border: 1px solid var(--success);
             color: var(--success);
         }
 
-        /* Security Notice */
         .security-notice {
             margin-top: 20px;
             padding: 12px 16px;
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.3);
+            background: rgba(37, 99, 235, 0.05);
+            border: 1px solid rgba(37, 99, 235, 0.2);
             border-radius: 8px;
             font-size: 0.8rem;
             color: var(--text-secondary);
         }
 
         .security-notice strong {
-            color: #a5b4fc;
+            color: var(--primary);
         }
 
-        /* Login Link */
         .login-link {
             text-align: center;
             margin-top: 20px;
@@ -305,7 +292,6 @@
             text-decoration: underline;
         }
 
-        /* Toggle password visibility */
         .password-wrapper {
             position: relative;
         }
@@ -323,7 +309,7 @@
         }
 
         .toggle-password:hover {
-            color: var(--text-primary);
+            color: var(--primary);
         }
     </style>
 </head>
@@ -339,21 +325,18 @@
             <div id="alertBox" class="alert"></div>
 
             <form id="registerForm" novalidate>
-                <!-- Name Field -->
                 <div class="form-group">
                     <label for="name">Full Name <span class="required">*</span></label>
                     <input type="text" id="name" placeholder="Enter your full name" autocomplete="name" required>
                     <div id="nameError" class="field-error"></div>
                 </div>
 
-                <!-- Email Field -->
                 <div class="form-group">
                     <label for="email">Email Address <span class="required">*</span></label>
                     <input type="email" id="email" placeholder="student@college.edu" autocomplete="email" required>
                     <div id="emailError" class="field-error"></div>
                 </div>
 
-                <!-- Password Field -->
                 <div class="form-group">
                     <label for="password">Password <span class="required">*</span></label>
                     <div class="password-wrapper">
@@ -363,7 +346,6 @@
                     </div>
                     <div id="passwordError" class="field-error"></div>
 
-                    <!-- Password Strength Indicator -->
                     <div class="password-strength">
                         <div class="strength-bar">
                             <div id="strengthFill" class="strength-fill"></div>
@@ -371,7 +353,6 @@
                         <div id="strengthText" class="strength-text"></div>
                     </div>
 
-                    <!-- Password Requirements Checklist -->
                     <ul class="password-rules">
                         <li id="rule-length">At least 8 characters</li>
                         <li id="rule-upper">At least 1 uppercase letter</li>
@@ -380,7 +361,6 @@
                     </ul>
                 </div>
 
-                <!-- Confirm Password Field -->
                 <div class="form-group">
                     <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
                     <input type="password" id="confirmPassword" placeholder="Confirm your password"
@@ -388,19 +368,14 @@
                     <div id="confirmError" class="field-error"></div>
                 </div>
 
-                <!-- Submit Button -->
-                <button type="submit" class="btn btn-primary" id="submitBtn">
-                    Create Account
-                </button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">Create Account</button>
             </form>
 
-            <!-- Security Notice -->
             <div class="security-notice">
-                <strong>🔒 Security Notice:</strong> This form creates student accounts only.
-                HOD and Watchman accounts are created by system administrators.
+                <strong>🔒 Security Notice:</strong> This form creates student accounts only. HOD and Watchman accounts
+                are created by system administrators.
             </div>
 
-            <!-- Login Link -->
             <div class="login-link">
                 Already have an account? <a href="/student.html">Login here</a>
             </div>
@@ -408,30 +383,18 @@
     </div>
 
     <script>
-        /**
-         * SECURITY STATEMENT:
-         * Frontend enforces role restriction and input validation,
-         * while backend ensures authentication, authorization,
-         * and password hashing.
-         * 
-         * CRITICAL: Role is HARD-CODED as "student" and cannot be changed by user.
-         */
-
         const API_BASE = '/api';
-        const HARD_CODED_ROLE = 'student'; // SECURITY: Role is not user-selectable
+        const HARD_CODED_ROLE = 'student';
 
-        // Rate limiting state
         let isSubmitting = false;
         let lastSubmitTime = 0;
-        const MIN_SUBMIT_INTERVAL = 2000; // 2 seconds between submissions
+        const MIN_SUBMIT_INTERVAL = 2000;
 
-        // DOM Elements
         const form = document.getElementById('registerForm');
         const alertBox = document.getElementById('alertBox');
         const submitBtn = document.getElementById('submitBtn');
         const passwordInput = document.getElementById('password');
 
-        // Validation rules
         const validators = {
             name: (value) => {
                 if (!value.trim()) return 'Name is required';
@@ -440,8 +403,7 @@
             },
             email: (value) => {
                 if (!value.trim()) return 'Email is required';
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(value)) return 'Please enter a valid email address';
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Please enter a valid email address';
                 return null;
             },
             password: (value) => {
@@ -459,7 +421,6 @@
             }
         };
 
-        // Real-time password strength checker
         passwordInput.addEventListener('input', function () {
             const password = this.value;
             updatePasswordStrength(password);
@@ -469,7 +430,6 @@
         function updatePasswordStrength(password) {
             const strengthFill = document.getElementById('strengthFill');
             const strengthText = document.getElementById('strengthText');
-
             let score = 0;
             if (password.length >= 8) score++;
             if (/[A-Z]/.test(password)) score++;
@@ -477,22 +437,11 @@
             if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score++;
 
             strengthFill.className = 'strength-fill';
-
-            if (password.length === 0) {
-                strengthText.textContent = '';
-            } else if (score <= 1) {
-                strengthFill.classList.add('weak');
-                strengthText.textContent = 'Weak password';
-            } else if (score === 2) {
-                strengthFill.classList.add('fair');
-                strengthText.textContent = 'Fair password';
-            } else if (score === 3) {
-                strengthFill.classList.add('good');
-                strengthText.textContent = 'Good password';
-            } else {
-                strengthFill.classList.add('strong');
-                strengthText.textContent = 'Strong password ✓';
-            }
+            if (password.length === 0) strengthText.textContent = '';
+            else if (score <= 1) { strengthFill.classList.add('weak'); strengthText.textContent = 'Weak password'; }
+            else if (score === 2) { strengthFill.classList.add('fair'); strengthText.textContent = 'Fair password'; }
+            else if (score === 3) { strengthFill.classList.add('good'); strengthText.textContent = 'Good password'; }
+            else { strengthFill.classList.add('strong'); strengthText.textContent = 'Strong password ✓'; }
         }
 
         function updatePasswordRules(password) {
@@ -505,13 +454,8 @@
         function togglePassword() {
             const input = document.getElementById('password');
             const btn = document.querySelector('.toggle-password');
-            if (input.type === 'password') {
-                input.type = 'text';
-                btn.textContent = 'Hide';
-            } else {
-                input.type = 'password';
-                btn.textContent = 'Show';
-            }
+            if (input.type === 'password') { input.type = 'text'; btn.textContent = 'Hide'; }
+            else { input.type = 'password'; btn.textContent = 'Show'; }
         }
 
         function showFieldError(fieldId, message) {
@@ -533,131 +477,70 @@
         function showAlert(message, type) {
             alertBox.textContent = message;
             alertBox.className = `alert alert-${type} show`;
-
-            if (type === 'success') {
-                setTimeout(() => {
-                    alertBox.classList.remove('show');
-                }, 5000);
-            }
         }
 
-        function hideAlert() {
-            alertBox.classList.remove('show');
-        }
+        function hideAlert() { alertBox.classList.remove('show'); }
 
         function setLoading(loading) {
-            if (loading) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span class="spinner"></span> Creating Account...';
-            } else {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Create Account';
-            }
+            if (loading) { submitBtn.disabled = true; submitBtn.innerHTML = '<span class="spinner"></span> Creating Account...'; }
+            else { submitBtn.disabled = false; submitBtn.innerHTML = 'Create Account'; }
         }
 
-        // Form submission handler
         form.addEventListener('submit', async function (e) {
             e.preventDefault();
             hideAlert();
 
-            // Rate limiting check
             const now = Date.now();
             if (isSubmitting || (now - lastSubmitTime) < MIN_SUBMIT_INTERVAL) {
                 showAlert('Please wait before submitting again', 'error');
                 return;
             }
 
-            // Get form values
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
 
-            // Clear previous errors
             ['name', 'email', 'password', 'confirm'].forEach(f => clearFieldError(f));
 
-            // Validate all fields
             let hasErrors = false;
-
             const nameError = validators.name(name);
-            if (nameError) {
-                showFieldError('name', nameError);
-                hasErrors = true;
-            }
-
+            if (nameError) { showFieldError('name', nameError); hasErrors = true; }
             const emailError = validators.email(email);
-            if (emailError) {
-                showFieldError('email', emailError);
-                hasErrors = true;
-            }
-
+            if (emailError) { showFieldError('email', emailError); hasErrors = true; }
             const passwordError = validators.password(password);
-            if (passwordError) {
-                showFieldError('password', passwordError);
-                hasErrors = true;
-            }
-
+            if (passwordError) { showFieldError('password', passwordError); hasErrors = true; }
             const confirmError = validators.confirmPassword(confirmPassword, password);
-            if (confirmError) {
-                showFieldError('confirmPassword', confirmError);
-                hasErrors = true;
-            }
+            if (confirmError) { showFieldError('confirmPassword', confirmError); hasErrors = true; }
 
             if (hasErrors) return;
 
-            // Start submission
             isSubmitting = true;
             lastSubmitTime = now;
             setLoading(true);
 
             try {
-                /**
-                 * SECURITY: Role is HARD-CODED as "student"
-                 * This ensures users cannot register as HOD or Watchman
-                 * Privileged roles are created by system administrators only
-                 */
                 const response = await fetch(`${API_BASE}/auth/register`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        name: name.trim(),
-                        email: email.trim().toLowerCase(),
-                        password: password, // NEVER log this value
-                        role: HARD_CODED_ROLE // SECURITY: Always "student"
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name.trim(), email: email.trim().toLowerCase(), password, role: HARD_CODED_ROLE })
                 });
-
                 const data = await response.json();
 
                 if (!response.ok) {
-                    // Handle specific error cases
-                    if (response.status === 409 || (data.message && data.message.toLowerCase().includes('duplicate'))) {
-                        throw new Error('This email is already registered. Please use a different email or login.');
-                    }
-                    if (response.status === 400) {
-                        throw new Error(data.message || 'Invalid registration data. Please check your inputs.');
-                    }
-                    throw new Error(data.message || 'Registration failed. Please try again.');
+                    if (response.status === 409 || (data.message && data.message.toLowerCase().includes('duplicate')))
+                        throw new Error('This email is already registered.');
+                    throw new Error(data.message || 'Registration failed.');
                 }
 
-                // Success!
                 showAlert('✅ Registration successful! Redirecting to login...', 'success');
                 form.reset();
-
-                // Reset password strength UI
                 document.getElementById('strengthFill').className = 'strength-fill';
                 document.getElementById('strengthText').textContent = '';
                 document.querySelectorAll('.password-rules li').forEach(li => li.classList.remove('valid'));
 
-                // Redirect to login page after 2 seconds
-                setTimeout(() => {
-                    window.location.href = '/student.html';
-                }, 2000);
-
+                setTimeout(() => { window.location.href = '/student.html'; }, 2000);
             } catch (error) {
-                // SECURITY: Show user-friendly error, never expose backend stack traces
                 showAlert(error.message, 'error');
             } finally {
                 isSubmitting = false;
@@ -665,33 +548,18 @@
             }
         });
 
-        // Real-time validation on blur
-        document.getElementById('name').addEventListener('blur', function () {
-            const error = validators.name(this.value);
-            if (error) showFieldError('name', error);
-            else {
-                clearFieldError('name');
-                this.classList.add('valid');
-            }
-        });
-
-        document.getElementById('email').addEventListener('blur', function () {
-            const error = validators.email(this.value);
-            if (error) showFieldError('email', error);
-            else {
-                clearFieldError('email');
-                this.classList.add('valid');
-            }
+        ['name', 'email'].forEach(field => {
+            document.getElementById(field).addEventListener('blur', function () {
+                const error = validators[field](this.value);
+                if (error) showFieldError(field, error);
+                else { clearFieldError(field); this.classList.add('valid'); }
+            });
         });
 
         document.getElementById('confirmPassword').addEventListener('blur', function () {
-            const password = document.getElementById('password').value;
-            const error = validators.confirmPassword(this.value, password);
+            const error = validators.confirmPassword(this.value, document.getElementById('password').value);
             if (error) showFieldError('confirmPassword', error);
-            else {
-                clearFieldError('confirmPassword');
-                this.classList.add('valid');
-            }
+            else { clearFieldError('confirmPassword'); this.classList.add('valid'); }
         });
     </script>
 </body>
