@@ -55,3 +55,5 @@ A complete gate pass management system with QR code generation and scanning.
 - `/student.html` - Student dashboard
 - `/hod.html` - HOD approval dashboard
 - `/scanner.html` - Watchman QR scanner
+
+## Demo Video Link- https://drive.google.com/file/d/17oxK23YRMHRTRp_3eznKnzfAuj7M3UC3/view?usp=drivesdk
